@@ -1,0 +1,100 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+	lintOptions{
+		abortOnError false
+	}
+	
+	defaultConfig{
+		applicationId "com.zj.example.gradle.demo3"
+		minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+	}
+
+	//必须写成signingConfigs不能自定义
+	signingConfigs{
+		//config名字可以自己定义
+		debugConfig{}
+		
+		//config名字可以自己定义
+		releaseConfig{
+			storeFile file("key.keystore")
+            storePassword "123456"
+            keyAlias "android"
+            keyPassword "123456"
+		}
+		
+		buildTypes{
+			//这里必须写成debug
+			debug{}
+			
+			//这里必须写成release
+			release{
+				signingConfig signingConfigs.releaseConfig
+				minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			}
+		}
+	}
+	
+	productFlavors{
+		//这里配置几个渠道,打包的时候就会打包出来几个apk
+		playstore{
+		
+			//如果要修改包名,可以修改applicationId
+			applicationId "com.zj.example.gradle.demo3.playstore"
+			
+			//如果修改了包名,这里需要启动第二个Activity的话,有两种方式:
+			//方法1:在manifest中配置:android:name="com.zj.example.gradle.demo3.${launcher_activity_name}"
+			//这样在placeHolder中就不需要把包名写全
+			manifestPlaceholders = [lable : "playstore", launcher_activity_name : "SecondActivity"]
+			
+			
+			//方法2:在placeholders中把包名写全
+			//manifestPlaceholders = [lable : "playstore", launcher_activity_name : "com.zj.example.gradle.demo3.SecondActivity"]
+			
+			
+		}
+	}
+	
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest-build.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+
+        // Move the tests to tests/java, tests/res, etc...
+        instrumentTest.setRoot('tests')
+
+        // Move the build types to build-types/<type>
+        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
+        // This moves them out of them default location under src/<type>/... which would
+        // conflict with src/ being used by the main source set.
+        // Adding new build types or product flavors should be accompanied
+        // by a similar customization.
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+}
