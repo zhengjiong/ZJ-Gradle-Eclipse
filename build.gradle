@@ -22,6 +22,10 @@ android {
 	
 	defaultConfig{
 		applicationId "com.zj.example.gradle.demo3"
+		
+		/*这里配置manifestPlaceholders后,在注释productFlavors后也可以正确运行*/
+		manifestPlaceholders = [lable : "default", launcher_activity_name : "MainActivity"]
+		
 		minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
